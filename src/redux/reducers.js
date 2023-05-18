@@ -2,6 +2,7 @@ const initialState = {
     searchResults: [],
     userData: null,
     userRepos: [],
+    repoDetails: null,
   };
   
   const rootReducer = (state = initialState, action) => {
@@ -12,6 +13,8 @@ const initialState = {
         return { ...state, userData: action.payload };
       case 'FETCH_USER_REPOS':
         return { ...state, userRepos: action.payload };
+      case 'FETCH_REPO_DETAILS':
+        return { ...state, repoDetails: action.payload };
       default:
         return state;
     }

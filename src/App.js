@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { searchUser, fetchUserData, fetchUserRepos } from './redux/actions';
+import { searchUser, fetchUserData, fetchUserRepos, fetchRepoDetails } from './redux/actions';
 import { ListGroup, Card } from 'react-bootstrap';
 import './App.css';
 
@@ -9,7 +9,9 @@ function App() {
   const searchResults = useSelector((state) => state.searchResults);
   const userData = useSelector((state) => state.userData);
   const userRepos = useSelector((state) => state.userRepos);
+  const repoDetails = useSelector((state) => state.repoDetails);
   const [username, setUsername] = useState('');
+  const [selectedRepo, setSelectedRepo] = useState(null);
 
   const handleSearch = () => {
     dispatch(searchUser(username));
@@ -20,6 +22,11 @@ function App() {
     dispatch(fetchUserRepos(selectedUser.login));
     const updatedSearchResults = searchResults.filter((user) => user.id === selectedUser.id);
     dispatch(searchUser(updatedSearchResults));
+  };
+
+  const handleRepoSelect = (repo) => {
+    setSelectedRepo(repo);
+    dispatch(fetchRepoDetails(repo.owner.login, repo.name));
   };
 
   return (
@@ -63,7 +70,9 @@ function App() {
           <h2>{userData.name}</h2>
           <img src={userData.avatar_url} alt="User Avatar" />
           <p>Followers: {userData.followers}</p>
-          {/* Display other user stats here */}
+          <p>Following: {userData.following}</p>
+          <p>Location: {userData.location}</p>
+          
         </div>
       )}
       {userRepos.length > 0 && (
@@ -75,7 +84,12 @@ function App() {
                 <Card>
                   <Card.Body>
                     <Card.Title>{repo.name}</Card.Title>
-                    {/* Display other repository details here */}
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => handleRepoSelect(repo)}
+                    >
+                      View Details
+                    </button>
                   </Card.Body>
                 </Card>
               </div>
@@ -83,11 +97,16 @@ function App() {
           </div>
         </div>
       )}
+      {selectedRepo && repoDetails && (
+  <div>
+    <h3>{selectedRepo.name}</h3>
+    <p>Commits: {repoDetails.commits}</p>
+    <p>Forks: {repoDetails.forks}</p>
+    <p>Issues: {repoDetails.issues}</p>
+  </div>
+)}
     </div>
   );
 }
 
 export default App;
-
-
-
